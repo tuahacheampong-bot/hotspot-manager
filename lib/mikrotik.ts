@@ -47,7 +47,7 @@ export async function getMikroTikClient(): Promise<RouterOSAPI> {
     port: config.port,
     user: config.user,
     password: config.password,
-    timeout: 8000,
+    timeout: 4000,
     keepalive: true,
   });
 

@@ -48,8 +48,12 @@ export async function POST(request: NextRequest) {
     });
 
     // Create MikroTik account with no profile (disabled until plan is selected)
+    // Wrapped in timeout so registration doesn't hang if MikroTik is unreachable
     try {
-      await mtCreateUser(hotspotUsername, password);
+      await Promise.race([
+        mtCreateUser(hotspotUsername, password),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('MikroTik timeout')), 3000)),
+      ]);
     } catch (mikrotikError) {
       console.error('MikroTik account creation error:', mikrotikError);
     }

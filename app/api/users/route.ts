@@ -93,13 +93,10 @@ export async function POST(request: NextRequest) {
     // If active, create hotspot user on MikroTik
     if (status === 'active') {
       try {
-        await mtCreateUser(
-          user.hotspotUsername!,
-          password,
-          profile,
-          uptimeLimit,
-          bytesLimit
-        );
+        await Promise.race([
+          mtCreateUser(user.hotspotUsername!, password, profile, uptimeLimit, bytesLimit),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('MikroTik timeout')), 5000)),
+        ]);
       } catch (mikrotikError) {
         console.error('MikroTik error:', mikrotikError);
       }

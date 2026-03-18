@@ -82,13 +82,10 @@ export async function PATCH(
 
     // Create user on MikroTik with the selected plan
     try {
-      await mtCreateUser(
-        user.hotspotUsername!,
-        mikrotikPassword,
-        planId,
-        uptimeLimit,
-        bytesLimit
-      );
+      await Promise.race([
+        mtCreateUser(user.hotspotUsername!, mikrotikPassword, planId, uptimeLimit, bytesLimit),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('MikroTik timeout')), 5000)),
+      ]);
     } catch (mikrotikError) {
       console.error('MikroTik user creation error:', mikrotikError);
       return serverErrorResponse('Failed to create user on MikroTik. Check if profile "' + planId + '" exists.');
