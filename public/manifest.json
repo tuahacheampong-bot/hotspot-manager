@@ -1,0 +1,10 @@
+{
+  "name": "Westerville Connect",
+  "short_name": "Westerville",
+  "description": "Westerville Connect WiFi Management",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "icons": []
+}
