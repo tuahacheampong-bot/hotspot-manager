@@ -30,9 +30,11 @@ export function authFetch(url: string, options: RequestInit = {}): Promise<Respo
 }
 
 /**
- * Logout helper — clears cookie and redirects to login.
+ * Logout helper — calls server to clear cookie, then redirects.
  */
-export function logout(router: { push: (url: string) => void }) {
-  document.cookie = 'auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+export async function logout(router: { push: (url: string) => void }) {
+  try {
+    await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' });
+  } catch { /* ignore */ }
   router.push('/login');
 }

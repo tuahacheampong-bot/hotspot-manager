@@ -28,7 +28,10 @@ export async function GET(request: NextRequest) {
     let bytesOut = 0;
 
     try {
-      const activeUsers = await mtGetActiveSessions();
+      const activeUsers = await Promise.race([
+        mtGetActiveSessions(),
+        new Promise<Record<string, unknown>[]>((_, reject) => setTimeout(() => reject(new Error('MikroTik timeout')), 3000)),
+      ]);
       activeSession = activeUsers.find((u) => {
         return (u['user'] || u['name']) === user.hotspotUsername;
       }) || null;
