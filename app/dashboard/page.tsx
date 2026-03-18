@@ -140,7 +140,7 @@ export default function DashboardPage() {
   const pendingPlan = pendingRequest ? plans.find(p => p.planId === pendingRequest.planId) : null;
 
   return (
-    <div className="glass-bg">
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100">
       {/* Header */}
       <header className="bg-white/60 backdrop-blur-xl border-b border-white/40 sticky top-0 z-40">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">

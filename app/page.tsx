@@ -6,7 +6,7 @@ import { usePlans } from '@/hooks/use-plans';
 export default function HomePage() {
   const { plans } = usePlans();
   return (
-    <div className="glass-bg">
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100">
       {/* Nav */}
       <nav className="flex items-center justify-between px-6 py-4 lg:px-12">
         <div className="flex items-center gap-2">
