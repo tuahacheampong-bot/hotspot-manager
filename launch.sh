@@ -85,24 +85,28 @@ echo ""
 # Build and run
 docker compose up -d --build
 
-# Wait for app to start
-echo -e "${BLUE}Waiting for app to start...${NC}"
-sleep 10
+# Wait for MongoDB to be ready
+echo -e "${BLUE}Waiting for MongoDB...${NC}"
+until docker compose exec mongodb mongosh --quiet --eval "db.runCommand({ping:1})" &>/dev/null; do sleep 2; done
 
 # Seed the database
 echo -e "${BLUE}Seeding database...${NC}"
-docker compose run --rm seed 2>/dev/null || true
+docker compose run --rm --build app npx tsx scripts/seed.ts --force 2>/dev/null || true
 
 # Create admin user
 echo -e "${BLUE}Creating admin account...${NC}"
 curl -s -X POST http://localhost:3000/api/auth/register \
   -H 'Content-Type: application/json' \
-  -d '{"name":"Admin","phone":"0555000000","password":"admin"}' > /dev/null 2>&1
+  -d '{"name":"Admin","phone":"0555000000","password":"admin"}' > /dev/null 2>&1 || true
+
+sleep 2
 
 # Set admin role via MongoDB
-docker compose exec mongodb mongosh hotspot-manager --eval "
-  db.users.updateOne({phone:'0555000000'}, {\$set:{role:'admin'}})
-" > /dev/null 2>&1 || true
+docker compose exec mongodb mongosh hotspot-manager --quiet --eval "
+  const u = db.users.findOne({phone:'0555000000'});
+  if (u) { db.users.updateOne({_id:u._id}, {\$set:{role:'admin'}}); print('Admin role set'); }
+  else { print('User not found'); }
+" 2>/dev/null || true
 
 ok "Admin created: 0555000000 / admin"
 
